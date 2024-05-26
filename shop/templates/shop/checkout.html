@@ -1,0 +1,14 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<h2>Оформление заказа</h2>
+<ul>
+  {% for item in cart_items %}
+  <li>{{ item.product.name }} - {{ item.quantity }} шт</li>
+  {% endfor %}
+</ul>
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Оформить заказ</button>
+</form>
+{% endblock %}
