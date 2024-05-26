@@ -1,0 +1,32 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% load product_tags %}
+
+{% block content %}
+<h2>Меню</h2>
+<div class="container">
+    <div class="content">
+        <form id="search-bar" method="GET" action="{% url 'search' %}">
+            <input id="search-field" type="text" name="q" placeholder="Введите запрос">
+            <button id="search-button" type="submit">Найти!</button>
+            <select name="sort_by">
+                <option value="">Сортировать по...</option>
+                <option value="price_asc">Цене (возрастание)</option>
+                <option value="price_desc">Цене (убывание)</option>
+                <option value="alphabetical">Алфавиту</option>
+            </select>
+            <button type="submit">Применить</button>
+        </form>
+
+        <ul class="productTable">
+            {% if products or all_products %}
+                {% for product in products|default:all_products %}
+                    {% render_product product %}
+                {% endfor %}
+            {% else %}
+                <p>No products found.</p>
+            {% endif %}
+        </ul>
+    </div>
+</div>
+{% endblock %}
