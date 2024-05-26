@@ -1,0 +1,6 @@
+<h2>Filtered Products</h2>
+<ul>
+    {% for product in products %}
+        <li>{{ product.name }} - {{ product.price }}</li>
+    {% endfor %}
+</ul>
