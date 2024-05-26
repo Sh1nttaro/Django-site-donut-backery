@@ -1,0 +1,15 @@
+{% extends "shop/base.html" %}
+{% block content %}
+
+<h2>Обратная связь</h2>
+<div class="container">
+    <div class="content">
+        <p> Через эту форму вы можете оставить свой отзыв о нас или связаться с нами по электронной почте.</p>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Submit Feedback</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
