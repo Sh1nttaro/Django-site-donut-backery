@@ -1,0 +1,87 @@
+{% extends "shop/base.html" %}
+{% load static %}
+{% load product_tags %}
+
+{% block content %}
+<h2>Корзина</h2>
+<div class="container">
+    <div class="content">
+        {% if cart_items %}
+        <ul class="cart-items">
+            {% for item in cart_items %}
+            <li class="cart-item" id="cart-item-{{ item.id }}">
+                <div class="item-details">
+                    <img src="{% static item.product.image %}" width="100px">
+                    <div class="product-info">
+                        <h3>{{ item.product.name }}</h3>
+                        <p>Цена: $<span class="item-price">{{ item.product.price|floatformat:2 }}</span></p>
+                        <p>Количество: <span class="item-quantity">{{ item.quantity }}</span></p>
+                    </div>
+                </div>
+                <div class="item-actions">
+                    <button onclick="removeFromCart('{{ item.id }}')">Удалить</button>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        <div class="cart-total">
+            <h3>Итого: $<span id="cart-total">{{ cart_total|floatformat:2 }}</span></h3>
+            <a href="{% url 'checkout' %}" class="checkout-button">Оформить заказ</a>
+        </div>
+        {% else %}
+        <p>Ваша корзина пуста.</p>
+        {% endif %}
+    </div>
+</div>
+<script>
+function removeFromCart(itemId) {
+    fetch(`/cart/remove/${itemId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken'),
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id: itemId })
+    }).then(response => response.json())
+    .then(data => {
+        if (data.cart_total !== undefined) {
+            document.getElementById(`cart-item-${itemId}`).remove();
+            updateCartTotal();
+        } else {
+            alert('Ошибка при удалении товара.');
+        }
+    }).catch(error => {
+        alert('Ошибка при удалении товара.');
+    });
+}
+
+function updateCartTotal() {
+    let total = 0.0;
+    document.querySelectorAll('.cart-item').forEach(item => {
+        const price = parseFloat(item.querySelector('.item-price').textContent);
+        const quantity = parseInt(item.querySelector('.item-quantity').textContent);
+        total += price * quantity;
+    });
+    document.getElementById('cart-total').textContent = total.toFixed(2);
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener('DOMContentLoaded', (event) => {
+    updateCartTotal();
+});
+</script>
+{% endblock %}
