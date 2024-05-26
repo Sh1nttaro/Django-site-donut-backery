@@ -1,0 +1,33 @@
+{% extends "shop/base.html" %}
+
+{% block content %}
+<h2>Профиль</h2>
+<div class="container">
+    <div class="content">
+        <h1>Здравствуйте, {{ user.username }}!</h1>
+        <h3>История заказов:</h3>
+        <ul>
+            {% for order in orders %}
+                <li>
+                    Заказ №{{ order.id }}, Дата: {{ order.order_date }}
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>Товар: {{ item.product.name }}, Количество: {{ item.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% empty %}
+                <li>У вас пока нет заказов.</li>
+            {% endfor %}
+        </ul>
+        <form method="post">
+            {% csrf_token %}
+            <div>
+                <label for="id_phone_number">Номер телефона:</label>
+                {{ form.phone_number }}
+            </div>
+            <button type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
