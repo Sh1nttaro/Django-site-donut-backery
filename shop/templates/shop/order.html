@@ -1,0 +1,24 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Корзина</h2>
+
+<div class="container">
+    {% for item in cart.items %}
+    <div class="item">
+        <p>{{ item.product.name }}</p>
+        <p>Цена: {{ item.product.price }}</p>
+        <p>Количество: {{ item.quantity }}</p>
+    </div>
+    {% empty %}
+    <p>Корзина пуста</p>
+    {% endfor %}
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Place Order</button>
+</form>
+{% endblock %}
