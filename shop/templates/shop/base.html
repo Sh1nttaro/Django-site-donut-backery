@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Balsamiq+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Neucha&family=Rubik+Bubbles&family=Rubik+Mono+One&display=swap"
+          rel="stylesheet">
+    <title>GLAZED</title>
+    {% load static %}
+    <link rel="icon" type="image/png" href="{% static 'images/logo16.png' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+<div class="wrapper">
+
+    <header>
+
+        <div class="header-container">
+            <div class='header-logo'>
+                {% if user_is_admin %}
+                <div class="header-logo-adminmode">
+                    <p>Административный режим</p>
+                </div>
+                {% endif %}
+                <img src="{% static 'images/logo2.png' %}" width="416" height="130" alt=""/>
+            </div>
+            <div class="header-buttons">
+                <button id="toggle-dark-mode">🌙</button>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'cart' %}" class="cart-button">🛒</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class='navigation-bar'>
+            <nav>
+                <a href="{% url 'home' %}">Главная</a>
+                <a href="{% url 'search' %}">Меню</a>
+                <a href="{% url 'feedback' %}">Обратная связь</a>
+                {% if request.user.is_authenticated %}
+                    {% if user_is_admin %}
+                        <a href="{% url 'product' %}">Товары</a>
+                    {% endif %}
+                    <a href="{% url 'profile' %}">Личный кабинет</a>
+                    <a href="{% url 'logout' %}">Выйти</a>
+                {% else %}
+                    <a href="{% url 'register' %}">Регистрация</a>
+                    <a href="{% url 'login' %}">Вход</a>
+                {% endif %}
+            </nav>
+        </div>
+
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+
+
+    <footer id="block_footer">
+        <div class="footerContainer">
+            <div class="footerLogo">
+                <img src="{% static 'images/logo32.png' %}">
+            </div>
+            <div class="copyright">
+                <p>Michael Makho© Тюмень 2024.</p>
+            </div>
+        </div>
+    </footer>
+
+</div>
+
+    <script src="{% static 'js/night_mode.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+</body>
+</html>
