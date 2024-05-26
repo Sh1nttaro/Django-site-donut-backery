@@ -192,26 +192,40 @@ def update_cart(request, cart_item_id):
 # Вкладка Checkout
 @login_required  # Проверка на авторизацию пользователя
 def checkout(request):
-    cart = get_object_or_404(Cart, user=request.user)  # Получаем корзину пользователя или выводим ошибку 404
-    cart_items = cart.items.all()  # Получаем все элементы корзины
+    # Получаем корзину пользователя или выводим ошибку 404
+    cart = get_object_or_404(Cart, user=request.user)
+    # Получаем все элементы корзины
+    cart_items = cart.items.all()
 
     if request.method == 'POST':
         if cart_items:
-            order, _ = Order.objects.get_or_create(user=request.user)  # Получаем или создаем заказ
+            # Получаем или создаем заказ
+            order, _ = Order.objects.get_or_create(user=request.user)
+            # Добавляем элементы корзины в заказ
             for item in cart_items:
-                order_item, created = OrderItem.objects.get_or_create(order=order, product=item.product)
-                if not created:
+                # Получаем все объекты OrderItem для данного заказа и продукта
+                order_items = OrderItem.objects.filter(order=order, product=item.product)
+                if order_items.exists():
+                    # Если элемент заказа существует, увеличиваем количество
+                    order_item = order_items.first()
                     order_item.quantity += item.quantity
                     order_item.save()
                 else:
+                    # Если элемент заказа не существует, создаем новый
                     OrderItem.objects.create(order=order, product=item.product, quantity=item.quantity)
-            cart.delete()  # Очищаем корзину после оформления заказа
-            messages.success(request, 'Order placed successfully!')
+            # Очищаем корзину после оформления заказа
+            cart.delete()
+            # Выводим сообщение об успешном размещении заказа
+            messages.success(request, 'Заказ успешно размещен!')
+            # Перенаправляем пользователя на главную страницу
             return redirect('home')
         else:
-            messages.error(request, 'Your cart is empty. Add items before checking out.')
-            return redirect('cart')
+            # Если корзина пуста, выводим сообщение об ошибке
+            messages.error(request, 'Ваша корзина пуста. Добавьте товары перед оформлением заказа.')
+            # Перенаправляем пользователя на страницу корзины
+            return redirect('view_cart')
     else:
+        # Если запрос не POST, отображаем страницу оформления заказа
         return render(request, 'shop/checkout.html', {'cart_items': cart_items})
 
 
@@ -221,18 +235,27 @@ def add_to_cart(request):
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
         quantity = int(request.POST.get('quantity', 0))
-        product = get_object_or_404(Product, pk=product_id)  # Получаем товар или выводим ошибку 404
-        cart, _ = Cart.objects.get_or_create(user=request.user)  # Получаем или создаем корзину пользователя
 
-        cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
-        if not created:
+        # Получение продукта или возврат ошибки 404, если продукт не найден
+        product = get_object_or_404(Product, pk=product_id)
+        cart, _ = Cart.objects.get_or_create(user=request.user)
+
+        # Попытка получить существующий элемент корзины для продукта
+        cart_item = CartItem.objects.filter(cart=cart, product=product).first()
+
+        # Обновление количества или создание нового элемента корзины
+        if cart_item:
             cart_item.quantity += quantity
             cart_item.save()
         else:
-            CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+            # Создание нового элемента корзины с указанным количеством
+            cart_item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
+        # Перенаправление на страницу корзины или другую соответствующую страницу
         return redirect('cart')
-    return HttpResponseBadRequest("Invalid request method")
+
+    # Обработка недопустимого метода запроса
+    return HttpResponseBadRequest("Недопустимый метод запроса")
 
 
 # Вкладка Remove from Cart
