@@ -1,0 +1,24 @@
+{% extends "shop/base.html" %}
+{% load static %}
+
+{% block content %}
+<h2>Товары</h2>
+<div class="container">
+    <a class="product-add-button" href="{% url 'add_product' %}">Добавить продукт</a>
+    <div class="content">
+        {% for product in all_products %}
+        <div class="product-row">
+            <div class="product-image">
+                <img src="{% static product.image %}" alt="{{ product.name }}" width="150">
+            </div>
+            <div class="product-info">
+                <h3>{{ product.name }}</h3>
+                <p>{{ product.description }}</p>
+                <p><strong>Price:</strong> {{ product.price }}</p>
+            </div>
+            <a class="product-editbutt" href="{% url 'edit_product' product.id %}">Ред. ✏️</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
