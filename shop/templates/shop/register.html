@@ -1,0 +1,28 @@
+{% extends "shop/base.html" %}
+{% block content %}
+<h2>Регистрация</h2>
+<div class="container">
+    <div class="content">
+        <form id="registration-form" method="post" autocomplete="off">
+            {% csrf_token %}
+            <div>
+                <label for="id_username">Username:</label>
+                {{ form.username }}
+            </div>
+            <div>
+                <label for="id_email">Email:</label>
+                {{ form.email }}
+            </div>
+            <div>
+                <label for="id_password1">Password:</label>
+                {{ form.password1 }}
+            </div>
+            <div>
+                <label for="id_password2">Confirm Password:</label>
+                {{ form.password2 }}
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
